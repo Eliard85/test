@@ -10,6 +10,7 @@ LOG_FILE="/hive/miners/custom/neptune_miner/neptune_miner.log"
 last_line=$(grep -E "G[0-9]+:" "$LOG_FILE" | tail -n 1)
 
 if [[ -z "$last_line" ]]; then
+  echo "0"
   echo "null"
   exit 0
 fi
@@ -34,6 +35,8 @@ for ((i=1; i<=gpu_count; i++)); do
   hash_arr+=($hr_val)
   ttl_hr=$(( ttl_hr + hr_val ))
 done
+
+khs=$(( ttl_hr / 1000 ))
 
 hash_json=$(printf '%s\n' "${hash_arr[@]}" | jq -cs '.' 2>/dev/null)
 bus_numbers=$(printf '%s\n' "${busids[@]}"  | jq -cs '.' 2>/dev/null)
@@ -78,4 +81,5 @@ stats=$(jq -nc \
     fan: ($fan | try fromjson // [])
   }')
 
+echo "$khs"
 echo "$stats"
